@@ -44,7 +44,7 @@ Unfortunately, costs weren't published so it is not possible to assess on perfor
 
 ### Prompt Engineering Notes
 
-Of note, during technical testing of the pipeline, I discovered that GPT-5 would easily get confused with structured data in ranges when the ranges are out-of-order, example A 90-100, B 80-90, C 120-150. I added specific instructions to correct this. This is an area OpenAI can cleary do some work to improve.
+Of note, during technical testing of the pipeline, I discovered that GPT-5 would easily get confused with structured data in ranges when the ranges are out-of-order, example A 90-100, B 80-90, C 120-150. I added specific instructions to correct this. This is an area OpenAI may want to research for improvement.
 
 
 ### Key features:
