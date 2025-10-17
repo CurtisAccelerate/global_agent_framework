@@ -130,12 +130,20 @@ async def _run_pipeline(
 
     print(f"[info] building pipeline '{pipeline_factory.__name__}' for query '{query_path}'")
 
+    question_text = None
     try:
         relative_query = query_path.relative_to(USER_QUERY_DIR)
         print(f"[info] loading user query template '{relative_query}'")
-        pipeline = pipeline_factory(user_query_template=str(relative_query), **pipeline_kwargs)
+        # Check if pipeline factory accepts user_query_template parameter
+        import inspect
+        sig = inspect.signature(pipeline_factory)
+        if 'user_query_template' in sig.parameters:
+            pipeline = pipeline_factory(user_query_template=str(relative_query), **pipeline_kwargs)
+        else:
+            pipeline = pipeline_factory(**pipeline_kwargs)
+            question_text = load_user_query(str(relative_query))
+            pipeline.set_context({"user_query": question_text})
         pipeline_input = None
-        question_text = load_user_query(str(relative_query))
     except ValueError:
         question_text = query_path.read_text(encoding="utf-8")
         pipeline = pipeline_factory(**pipeline_kwargs)
@@ -163,6 +171,8 @@ async def _run_pipeline(
 
     response_text = str(result.data or "")
 
+    if question_text is None:
+        question_text = query_path.read_text(encoding="utf-8")
     question_section = ["# Question", question_text.strip(), ""]
     response_section = [f"# {pipeline.name.replace('_', ' ').title()} Response", response_text.strip()]
 
