@@ -59,6 +59,7 @@ Build and run multiple custom pipelines:
 - OpenAI‑compatible endpoints and SSE streaming (with optional heartbeats) for easy client integration.
 - Structured artifacts and logs in `logs/` (`stage_responses.jsonl`, `pipeline_trace.md`), toggled by `FILE_LOGGING_ENABLED`.
 - Works offline for demos/tests (stubbed search) and deploys cleanly to Cloud Run.
+- Agent runner for running against FutureX pipelines against cloud or local deployments.
 
 Built for speed and clarity first: it’s not yet production‑hardened; review and harden before use in sensitive environments.
 
@@ -75,7 +76,7 @@ It is able to be deployed to Google Cloud for running workloads against it. Howe
 
 1. Clone the repository and enter the workspace:
    - `git clone <repository-url>`
-   - `cd agent_framework_v2`
+   - `cd global_agent_framework`
 2. Create and activate a fresh Python 3.10+ virtual environment.
 3. Install requirements: `pip install -r requirements.txt`
 4. Create a `.env` file in the repo root and populate API keys (see `docs/ENVIRONMENT.md`).
@@ -93,16 +94,19 @@ If the smoke test succeeds, hit `http://localhost:8000/health` or invoke `/execu
 - `tools/` — Optional integrations (serper, serp.dev stubs, Deribit, Polymarket, Odds APIs) automatically registered when available.
 - `scripts/` — Convenience commands for smoke testing, import validation, and pipeline demos.
 - `docs/` — Showcase, deployment, and environment references.
-- `tests/` (`test_*.py`) — Automated checks covering pipelines, API surfaces, and tool adapters.
+- `tests/` — Automated checks covering pipelines, API surfaces, and tool adapters.
 - `logs/` (generated) — Pipeline trace artifacts written when file logging is enabled; ignored by git.
 - `queries/` — Intentionally empty folder reserved for private or competition-specific user prompts; keep this out of version control when sharing the framework.
+ - `agent_framework/` — Minimal shim package offering stable imports (e.g., `from agent_framework.pipeline import Pipeline`).
+ - `apps/agent_runner/` — Runner app for batch processing FutureX datasets.
+
+To keep the root tidy, tests and runner code are placed under `tests/` and `apps/agent_runner/`. Existing top-level files remain for backward compatibility.
 
 ## Query Templates
 
 - Store any sensitive FutureX prompts or internal research questions inside the `queries/` directory so they remain separate from distributable prompt pipelines.
 - `run_query_pipeline.py` and API clients can reference files from `queries/` by filename via a positional argument. Example CLI usage is shown below.
-- We do not ship sample queries to avoid leaking proprietary strategies; add your own Markdown or JSON templates locally.
-- If you publish derived work, ensure queries are sanitized or excluded to protect personally identifiable information and private forecasts.
+- We do not ship sample queries; add your own Markdown or JSON templates locally.
 
 ## Run Pipelines (CLI)
 
@@ -127,6 +131,11 @@ Notes:
 - Outputs are written to `responses/` with per-stage artifacts; traces go to `logs/` when `FILE_LOGGING_ENABLED=true`.
 - To use live web search, set `SERPER_API_KEY` and ensure `SERPER_USE_STUB=false` (or unset). Back-compat: `SERP_DEV_USE_STUB` is also honored.
 - Authentication failures (e.g., invalid `OPENAI_API_KEY`) cause the CLI to exit non‑zero with a clear error message.
+
+ Monorepo note:
+ - New projects in this repo can import via the shim, e.g.:
+   - `from agent_framework.agent_pipeline_declarations import create_prediction_pipeline`
+   - This avoids changing existing files while giving a stable package-style path.
 
 ## Cloud Run Deployment Notes
 
@@ -198,7 +207,7 @@ Tool selection is governed by the Stage 1 TOOL_PLAN, ensuring every call maps to
 
 1. Clone the repository and enter the workspace:
    - `git clone <repository-url>`
-   - `cd agent_framework_v2`
+   - `cd global_agent_framework`
 2. Install Python 3.10+ dependencies: `pip install -r requirements.txt`
 3. Copy `.env.example` and provide secrets:
    - `OPENAI_API_KEY` (required)
@@ -269,7 +278,8 @@ Set `SERP_DEV_USE_STUB=true` to use offline search stubs instead of live APIs du
 - **`futuerex_stub` (offline)** — CLI key: `prediction_stub` — Mirrors production flow but relies solely on baked serp.dev stubs and deterministic responses; ideal for demos, scoring sandboxes, or CI.
 - **`research_pipeline` (generalized)** — CLI key: `research` — Context planning and synthesis pipeline for non-forecast research deliverables.
 - **API Server Mode** — Launch `python main.py` to expose FastAPI endpoints (`/pipelines`, `/execute`, `/health`).
-- **Direct Test Mode** — Run `python test_pipeline_simple.py` or `python test_structure_demo.py` to validate stage orchestration end-to-end.
+ - **Direct Test Mode** — From repo root, run: `python -m pytest -q` or `python tests/test_pipeline_simple.py`.
+ - **Monorepo Runner** — Use `apps/agent_runner/` or create additional apps under `apps/` that import from `agent_framework.*` without modifying core files.
 
 ## Deployment
 
@@ -280,6 +290,51 @@ Set `SERP_DEV_USE_STUB=true` to use offline search stubs instead of live APIs du
 
 With this protocol, the Agent Framework continues to deliver competition-grade predictions, combining structured planning, tool-augmented reasoning, and rigorous finalization for high-stakes forecasting.
 
+
+## Agent Runner (apps/agent_runner)
+
+A minimal, standalone runner is included under `apps/agent_runner` to batch‑process the public FutureX dataset end‑to‑end. It supports three modes:
+
+- stub-local: no HTTP, deterministic boxed answers for testing
+- stub-http: call a tiny local stub server that mimics OpenAI
+- real: call a real OpenAI‑compatible endpoint (this repo’s FastAPI `/v1/chat/completions`)
+
+Quick start:
+
+```powershell
+cd apps/agent_runner
+python -m venv .venv; .\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+# Preview the dataset
+python cli.py verify-data --head 3
+
+# Run a short local stub batch
+python cli.py run --mode stub-local --limit 3
+
+# Option A: Run against the local API from this repo
+# In another terminal (repo root):
+#   python main.py
+# Then from agent_runner:
+python cli.py run --mode stub-http --limit 3  # or real with endpoint+key
+
+# Real endpoint (example)
+$env:AGENT_RUNNER_ENDPOINT = "http://127.0.0.1:8000/v1/chat/completions"
+$env:AGENT_RUNNER_API_KEY = "<your_server_api_key_if_enabled>"
+python cli.py run --mode real --limit 3
+```
+
+Outputs are written incrementally to `apps/agent_runner/out/futurex_<commitsha>/`:
+- `predictions.jsonl` — one `{id, prediction}` JSON per row (prediction is the TeX `\boxed{...}` content)
+- `manifest.json` — run metadata and file pointers
+- `logs/` — per‑request HTTP logs (stub‑http/real modes)
+
+Configuration can be passed via flags or environment variables; copy `apps/agent_runner/demo.env` to `.env` and set:
+
+```text
+AGENT_RUNNER_ENDPOINT=
+AGENT_RUNNER_API_KEY=
+```
 
 ## License
 

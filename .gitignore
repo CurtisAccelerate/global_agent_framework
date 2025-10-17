@@ -28,12 +28,20 @@ responses/
 logs/
 pipeline_test_results.log
 test_results.log
+artifacts/
 
 node_modules
 dist
 
 # Local python packages
 .python_packages/
+
+# Runner app artifacts (monorepo)
+apps/agent_runner/.env
+apps/agent_runner/out/
+apps/agent_runner/.venv/
+apps/agent_runner/__pycache__/
+apps/agent_runner/.pytest_cache/
 
 # Python Environments
 .env
