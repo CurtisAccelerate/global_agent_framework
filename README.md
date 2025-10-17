@@ -102,7 +102,7 @@ To keep the root tidy, tests and runner code are placed under `tests/` and `apps
 
 ## Query Templates
 
-- Store any sensitive FutureX prompts or internal research questions inside the `queries/` directory so they remain separate from distributable prompt pipelines.
+- Store any sensitive prompts or internal research questions inside the `queries/` directory so they remain separate from distributable prompt pipelines.
 - `run_query_pipeline.py` and API clients can reference files from `queries/` by filename via a positional argument. Example CLI usage is shown below.
 - We do not ship sample queries; add your own Markdown or JSON templates locally.
 - Unfortunately processing the pipeline via API is slow-- it can take 4 to 8 minutes per query. 
