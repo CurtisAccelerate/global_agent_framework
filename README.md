@@ -50,11 +50,10 @@ Of note, during technical testing of the pipeline, I discovered that GPT-5 would
 
 
 ## Caution
-This is entirely AI generated code for rapidly testing my ideas in the competition. Code was not developed for production use but may nonetheless prove invaluable for indepedent researchers or as a local research agentic pipeline.
+The codebase was AI generated for rapidly testing my ideas in the competition without extensive human review. While, the pipelines have worked for my puporses in the competition and was tested: code was not developed for production use but may nonetheless prove invaluable for indepedent researchers or as a local research agentic pipeline.
 
 It is able to be deployed to Google Cloud for running workloads against it. However, it is *not* recommended for production deployment without a thorough review.  It is recommended that a thorough code and security review be conducted before use and deployment. 
 
-## Detailed Documentation AI Generated
 
 ## Quick Start
 
@@ -63,7 +62,7 @@ It is able to be deployed to Google Cloud for running workloads against it. Howe
    - `cd agent_framework_v2`
 2. Create and activate a fresh Python 3.10+ virtual environment.
 3. Install requirements: `pip install -r requirements.txt`
-4. Copy `.env.example` to a local secrets file and populate API keys (see `Secrets Configuration`).
+4. Create a `.env` file in the repo root and populate API keys (see `docs/ENVIRONMENT.md`).
 5. Run a smoke test: `python test_pipeline_simple.py`
 6. Launch the FastAPI server when ready: `python main.py`
 
@@ -85,9 +84,33 @@ If the smoke test succeeds, hit `http://localhost:8000/health` or invoke `/execu
 ## Query Templates
 
 - Store any sensitive FutureX prompts or internal research questions inside the `queries/` directory so they remain separate from distributable prompt pipelines.
-- `run_query_pipeline.py` and API clients can reference files from `queries/` by filename (for example, `--query my_competition_prompt.md`).
+- `run_query_pipeline.py` and API clients can reference files from `queries/` by filename via a positional argument. Example CLI usage is shown below.
 - We do not ship sample queries to avoid leaking proprietary strategies; add your own Markdown or JSON templates locally.
 - If you publish derived work, ensure queries are sanitized or excluded to protect personally identifiable information and private forecasts.
+
+## Run Pipelines (CLI)
+
+Use the convenience script to run a local query file through a pipeline:
+
+```powershell
+# Research pipeline (generalized research/synthesis)
+python scripts/run_query_pipeline.py research queries/my_prompt.md
+
+# FutureX pipeline (full production flow)
+python scripts/run_query_pipeline.py prediction queries/my_prompt.md
+
+# Stubbed FutureX pipeline (no external API calls)
+python scripts/run_query_pipeline.py prediction_stub queries/my_prompt.md
+
+# Optional: write to a specific output file
+python scripts/run_query_pipeline.py research queries/my_prompt.md --output out.md
+```
+
+Notes:
+- The first positional arg is the pipeline key; the second is the path or filename under `queries/`.
+- Outputs are written to `responses/` with per-stage artifacts; traces go to `logs/` when `FILE_LOGGING_ENABLED=true`.
+- To use live web search, set `SERPER_API_KEY` and ensure `SERPER_USE_STUB=false` (or unset). Back-compat: `SERP_DEV_USE_STUB` is also honored.
+- Authentication failures (e.g., invalid `OPENAI_API_KEY`) cause the CLI to exit non‑zero with a clear error message.
 
 ## Cloud Run Deployment Notes
 
@@ -226,9 +249,9 @@ Set `SERP_DEV_USE_STUB=true` to use offline search stubs instead of live APIs du
 
 ## Operating Modes
 
-- **`futuerex` (production)** — Full FutureX pipeline: multi-draft context → evidence builder → deep researcher → formatter; uses live tools when keys are present.
-- **`futuerex_stub` (offline)** — Mirrors production flow but relies solely on baked serp.dev stubs and deterministic responses; ideal for demos, scoring sandboxes, or CI.
-- **`research_pipeline` (generalized)** — Context planning and synthesis pipeline for non-forecast research deliverables.
+- **`futuerex` (production)** — CLI key: `prediction` — Full FutureX pipeline: multi-draft context → evidence builder → deep researcher → formatter; uses live tools when keys are present.
+- **`futuerex_stub` (offline)** — CLI key: `prediction_stub` — Mirrors production flow but relies solely on baked serp.dev stubs and deterministic responses; ideal for demos, scoring sandboxes, or CI.
+- **`research_pipeline` (generalized)** — CLI key: `research` — Context planning and synthesis pipeline for non-forecast research deliverables.
 - **API Server Mode** — Launch `python main.py` to expose FastAPI endpoints (`/pipelines`, `/execute`, `/health`).
 - **Direct Test Mode** — Run `python test_pipeline_simple.py` or `python test_structure_demo.py` to validate stage orchestration end-to-end.
 
