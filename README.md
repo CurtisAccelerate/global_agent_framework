@@ -18,8 +18,8 @@ FutureX victories validated the core of my prompt engineering work.
 
 The core of my global agentic prompt protocol is:
 
-1. A context generation stage before reasoning can boost reasoning capability. This stage uses minimal reasoning for both cost and as a result of my observation that minimal/no reasoning modes seem to have better "understanding". It has been my observation there is a reasoning/understanding bias/variance style trade-off when using reasoning models, i.e. stronger reasoning results in reduced understanding.
-2. A deep reasoning stage with specific instructions to surface uncertaintities and assess self-confidence as a core reasoning method.  It has my observation that many seemingly disparate disconnected techniques in prompt engineering act as "uncertainty resolvers"-- uncertainty can be resolved via generation, tools, code, etc.
+1. A context generation stage before reasoning can boost reasoning capability. This stage uses minimal reasoning for both cost and as a result of my observation that minimal/no reasoning modes seem to have better "understanding". It has been my observation there is a reasoning/understanding bias/variance style trade-off when using reasoning models, i.e. stronger reasoning results in reduced understanding. 
+2. A deep reasoning stage with specific instructions to iteratively surface uncertaintities and assess self-confidence as part of an iterative loop.  It has been my observation that many seemingly disparate disconnected techniques in prompt engineering can be understood act as "uncertainty resolvers"-- uncertainty can be resolved via generation, tools, code, etc thus the concept of uncertatiny resolution can be thought of as a universal technique for boosting LLM performance, a central technique in intelligence.
 3. Optionally, a formatting stage for ensuring answer is in the proper context.  
 
 Additionally, I enhanced my protocol with access to custom tools:
@@ -29,9 +29,9 @@ Additionally, I enhanced my protocol with access to custom tools:
 - Odds for sports 
 - Built-in search
 
-Initial testing showed SOTA performance in reasoning and search kinds of events. However, the leading other competitor, MiroFlow, scored higher in wide search capability. After conducting an AI review of their project, I extended my agnetic pipeline with Serper API for wide search capabilities.
+Initial testing showed SOTA performance in reasoning and predicting certain kinds of events where custom tools helped. However, the leading other competitor, MiroFlow, scored higher in wide-search capability. After conducting an AI review of their project, I extended my agnetic pipeline with Serper API for wide search capabilities. It was my observation models may be search constrained.
 
-In addition, I added multiple drafts to the first stage only, configured to 2 drafts in our winning competition. This simulates the kind of multiple drafts reasoning present in multi-draft models like GPT-5 Pro, Grok-4, and the leading other competitor MiroFlow uses a more advanced multi-draft consensus.  Adopting a multi-draft consensus approach was considered but would have increased API costs-- by adopting the approach of multiple drafts only in the context generation state this minimized additional costs.
+In addition, I added multiple drafts to the first stage only, configured to 2 drafts in our winning competition. This simulates the kind of multiple drafts reasoning present in multi-draft models like GPT-5 Pro, Grok-4 Heavy, and the leading other competitor MiroFlow uses multi-draft consensus.  Adopting a multi-draft consensus approach was considered but would have increased API costs-- by adopting the approach of multiple drafts only in the context generation state it minimized additional costs.
 
 
 ### Results
@@ -59,18 +59,16 @@ Build and run multiple custom pipelines:
 - OpenAI‑compatible endpoints and SSE streaming (with optional heartbeats) for easy client integration.
 - Structured artifacts and logs in `logs/` (`stage_responses.jsonl`, `pipeline_trace.md`), toggled by `FILE_LOGGING_ENABLED`.
 - Works offline for demos/tests (stubbed search) and deploys cleanly to Cloud Run.
-- Agent runner for running against FutureX pipelines against cloud or local deployments.
+- Agent runner for running against FutureX pipelines against cloud or local deployments. Agent runner can process many queries in parallel up to 7-10 have been tested but downstream APIs may throttle.
 
-Built for speed and clarity first: it’s not yet production‑hardened; review and harden before use in sensitive environments.
-
-This agent framework was developed rapidly, as a means toward proving out my prompt engineering work aimed at boosting the capabilites of GPT-5 and other LLMs in the real-world FutureX event competition.
-
+This agent framework was developed rapidly, as a means toward proving out my prompt engineering work aimed at boosting the capabilites of GPT-5 and other LLMs in the real-world FutureX event competition. Built for speed of prototpying: it’s not yet production‑hardened; review and harden before use in sensitive environments.
 
 ## Caution
 The codebase was AI generated for rapidly testing my ideas in the competition without extensive human review. While, the pipelines have worked for my puporses in the competition and was tested: code was not developed for production use but may nonetheless prove invaluable for indepedent researchers or as a local research agentic pipeline.
 
 It is able to be deployed to Google Cloud for running workloads against it. However, it is *not* recommended for production deployment without a thorough review.  It is recommended that a thorough code and security review be conducted before use and deployment. 
 
+As well, the technical documentation below was mostly AI generated and is assumed-to-be generally correct but hasn't been thoroughly human reviewed.
 
 ## Quick Start
 
@@ -107,6 +105,7 @@ To keep the root tidy, tests and runner code are placed under `tests/` and `apps
 - Store any sensitive FutureX prompts or internal research questions inside the `queries/` directory so they remain separate from distributable prompt pipelines.
 - `run_query_pipeline.py` and API clients can reference files from `queries/` by filename via a positional argument. Example CLI usage is shown below.
 - We do not ship sample queries; add your own Markdown or JSON templates locally.
+- Unfortunately processing the pipeline via API is slow-- it can take 4 to 8 minutes per query. 
 
 ## Run Pipelines (CLI)
 
