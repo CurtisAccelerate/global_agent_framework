@@ -245,7 +245,7 @@ With this protocol, the Agent Framework continues to deliver competition-grade p
 
 ## License
 
-Note I encourage additional testing, research, and adoption of my prompting engineering techniques. I received no funding, OpenAI credits, or support in development and testing of these protocols.
+Note I encourage and welcome additional testing, research, and adoption of my prompting engineering techniques. I received no funding, OpenAI credits, or support in development and testing of these protocols.
 
 As such, I simply ask for attribution when using the Global Agentic Protocol prompts, deriviatives, or this pipeline in research, papers, demos, or production derivatives, please provide clear attribution to Curtis White and the Global Agent Framework FutureX project alongside any published results.
 

@@ -184,6 +184,35 @@ async def _run_pipeline(
     if work_dir.exists():
         print(f"[info] wrote stage artifacts to {work_dir}")
 
+    # If any stages failed, summarize and optionally fail the run
+    failed_stages = []
+    try:
+        for idx, sr in enumerate(result.stage_results or [], start=1):
+            if not getattr(sr, "success", True):
+                stage_name = (getattr(sr, "metadata", {}) or {}).get("agent_name") or f"stage_{idx}"
+                failed_stages.append((stage_name, getattr(sr, "error", "Unknown error")))
+    except Exception:
+        pass
+
+    if failed_stages:
+        print(f"[warn] {len(failed_stages)} stage(s) failed during execution:")
+        for name, err in failed_stages:
+            print(f"       - {name}: {err}")
+
+        # Detect likely authentication errors to provide a clearer message and non-zero exit
+        def _is_auth_error(msg: str) -> bool:
+            low = (msg or "").lower()
+            return (
+                "invalid api key" in low
+                or "incorrect api key" in low
+                or "authentication" in low
+                or "401" in low
+            )
+
+        if any(_is_auth_error(err or "") for _, err in failed_stages):
+            print("[error] Authentication failed (invalid or missing API key). Check OPENAI_API_KEY and any search keys (SERPER_API_KEY) in your .env. See docs/ENVIRONMENT.md.")
+            raise RuntimeError("Authentication error: invalid or missing API key(s)")
+
     return output_path
 
 
@@ -212,8 +241,13 @@ def main() -> None:
 
     print(f"[info] using output file {output_path}")
 
-    asyncio.run(_run_pipeline(factory, query_path, args.stub, output_path))
-    print("[done] pipeline run complete")
+    try:
+        asyncio.run(_run_pipeline(factory, query_path, args.stub, output_path))
+        print("[done] pipeline run complete")
+    except Exception as e:
+        # Fail gracefully with a clear message and non-zero exit without stack trace noise
+        print(f"[fatal] {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
