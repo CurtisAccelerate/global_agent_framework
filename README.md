@@ -50,10 +50,9 @@ Of note, during technical testing of the pipeline, I discovered that GPT-5 would
 
 
 ## Caution
-AI generated code for competition. Code was not developed for production use but may nonetheless prove valuable for indepedent researchers or as a local research agentic pipeline.
+This is entirely AI generated code for rapidly testing my ideas in the competition. Code was not developed for production use but may nonetheless prove invaluable for indepedent researchers or as a local research agentic pipeline.
 
-I was able to deploy it to Google Cloud for running workloads against as well but it is not recommended for production use case-by-case consideration and a thorough code review. 
-
+It is able to be deployed to Google Cloud for running workloads against it. However, it is *not* recommended for production deployment without a thorough review.  It is recommended that a thorough code and security review be conducted before use and deployment. 
 
 ## Detailed Documentation AI Generated
 
