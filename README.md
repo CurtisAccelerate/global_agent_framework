@@ -1,9 +1,7 @@
 # Global Agent Framework FutureX Champion
 ## Introduction
 
-This is an Agent framework for generating custom agentic pipelines for GPT-5 with ability to define multiple multi-stage prompt pipeplines, custom tools, and run against ad-hoc queries or in server mode.
-
-This agent framework was developed rapidly, as a means toward proving out my prompt engineering work aimed at boosting the capabilites of GPT-5 and other LLMs in the real-world FutureX event competition.
+This is a lightweight, research‑grade agent framework for building multi‑stage prompt pipelines with GPT‑5. 
 
 
 ## FutureX Champion Results
@@ -47,6 +45,24 @@ Unfortunately, costs weren't published so it is not possible to assess on perfor
 ### Prompt Engineering Notes
 
 Of note, during technical testing of the pipeline, I discovered that GPT-5 would easily get confused with structured data in ranges when the ranges are out-of-order, example A 90-100, B 80-90, C 120-150. I added specific instructions to correct this. This is an area OpenAI can cleary do some work to improve.
+
+
+### Key features:
+
+Build and run multiple custom pipelines:
+
+- Custom per‑stage model settings: choose model, reasoning effort, temperature, token limits, tool_choice, parallel tool calls, and timeouts.
+- Pipelines authored with simple Markdown prompts per stage; define/swap pipelines in a few lines of Python or via a JSON POST to the API.
+- Multi‑draft Stage 1 for stronger context plans (configurable via `STAGE1_DRAFT_COUNT`).
+- Pluggable tools: built‑in web search, Serper/serp.dev stubs, Polymarket, Deribit, Odds API; plus add your own Python function tools with JSON schema.
+- Global Reasoning pipelines offering enhanced reasoning 
+- OpenAI‑compatible endpoints and SSE streaming (with optional heartbeats) for easy client integration.
+- Structured artifacts and logs in `logs/` (`stage_responses.jsonl`, `pipeline_trace.md`), toggled by `FILE_LOGGING_ENABLED`.
+- Works offline for demos/tests (stubbed search) and deploys cleanly to Cloud Run.
+
+Built for speed and clarity first: it’s not yet production‑hardened; review and harden before use in sensitive environments.
+
+This agent framework was developed rapidly, as a means toward proving out my prompt engineering work aimed at boosting the capabilites of GPT-5 and other LLMs in the real-world FutureX event competition.
 
 
 ## Caution
