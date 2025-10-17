@@ -201,7 +201,7 @@ Tool selection is governed by the Stage 1 TOOL_PLAN, ensuring every call maps to
 
 - Stage 1 logs capture the original query, unknown enumeration, and planned tool actions. These details are written to `logs/stage_responses.jsonl` and `logs/pipeline_trace.md` when logging is enabled.
 - Before sharing logs externally, redact personally identifiable information, secrets, and sensitive market positions mentioned in queries or tool payloads.
-- For competition submissions, we trimmed logs to retain only anonymized queries plus confidence summaries, ensuring compliance with FutureX privacy requirements.
+
 
 ## Installation
 
