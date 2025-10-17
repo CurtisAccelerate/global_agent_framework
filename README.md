@@ -1,14 +1,14 @@
 # Global Agent Framework FutureX Champion
 ## Introduction
 
-This is an Agent framework for generating custom agentic pipelines for GPT-5 with ability to define multiple pipelines, custom tools, etc.
+This is an Agent framework for generating custom agentic pipelines for GPT-5 with ability to define multiple multi-stage prompt pipeplines, custom tools, and run against ad-hoc queries or in server mode.
 
-This agent framework was developed rapidly, as a means toward proving out my prompt engineering work aimed at boosting the capabilites of GPT-5 ando ther LLMs in the real-world FutureX event competition.
+This agent framework was developed rapidly, as a means toward proving out my prompt engineering work aimed at boosting the capabilites of GPT-5 and other LLMs in the real-world FutureX event competition.
 
 
 ## FutureX Champion Results
 
-With this framework, we produced a 1st Place Weekly result besting all other agents in the first month of October and several 2nd Place results. The first place finish resulted in a 23% performance boost over GPT-5 Pro and an incredible 47% performance boost over Grok-4 Search.
+With this framework, we produced a 1st Place Weekly result besting all other agents in the first month of October and several 2nd Place results prior to that. The first place finish resulted in a 23% performance boost over GPT-5 Pro and an incredible 47% performance boost over Grok-4 Search.
 
 ![FutureX Champion Result](docs/assets/futurex_win.jpg)
 
@@ -48,16 +48,14 @@ Unfortunately, costs weren't published so it is not possible to assess on perfor
 
 Of note, during technical testing of the pipeline, I discovered that GPT-5 would easily get confused with structured data in ranges when the ranges are out-of-order, example A 90-100, B 80-90, C 120-150. I added specific instructions to correct this. This is an area OpenAI can cleary do some work to improve.
 
+
 ## Caution
 AI generated code for competition. Code was not developed for production use but may nonetheless prove valuable for indepedent researchers or as a local research agentic pipeline.
 
 I was able to deploy it to Google Cloud for running workloads against as well but it is not recommended for production use case-by-case consideration and a thorough code review. 
 
 
-
 ## Detailed Documentation AI Generated
-
-
 
 ## Quick Start
 
@@ -247,8 +245,9 @@ With this protocol, the Agent Framework continues to deliver competition-grade p
 
 ## License
 
-Note: When Global Agentic Protocol prompts, modifying or this pipeline in research, demos, or production derivatives, please provide clear attribution to Curtis White and the Global Agent Framework FutureX project alongside any published results.
+Note I encourage additional testing, research, and adoption of my prompting engineering techniques. I received no funding, OpenAI credits, or support in development and testing of these protocols.
 
+As such, I simply ask for attribution when using the Global Agentic Protocol prompts, deriviatives, or this pipeline in research, papers, demos, or production derivatives, please provide clear attribution to Curtis White and the Global Agent Framework FutureX project alongside any published results.
 
 MIT License
 
