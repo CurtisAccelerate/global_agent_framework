@@ -1,11 +1,14 @@
 # Global Agent Framework FutureX Champion
 ## Introduction
 
-This is an Agent framework for generating custom agentic pipelines for GPT-5 with ability to define multiple pipelines, custom tools, etc. It is an AI generated project quickly developed as a real-world test and verification for my original prompt engineering work developed to boost the capability of LLMs like GPT-5, specifically adapted of "Global Reasoning" protocol. 
+This is an Agent framework for generating custom agentic pipelines for GPT-5 with ability to define multiple pipelines, custom tools, etc.
 
+This agent framework was developed rapidly, as a means toward proving out my prompt engineering work aimed at boosting the capabilites of GPT-5 ando ther LLMs in the real-world FutureX event competition.
+
+
+## FutureX Champion Results
 
 With this framework, we produced a 1st Place Weekly result besting all other agents in the first month of October and several 2nd Place results. The first place finish resulted in a 23% performance boost over GPT-5 Pro and an incredible 47% performance boost over Grok-4 Search.
-
 
 ![FutureX Champion Result](docs/assets/futurex_win.jpg)
 
@@ -19,36 +22,41 @@ The core of my global agentic prompt protocol is:
 
 1. A context generation stage before reasoning can boost reasoning capability. This stage uses minimal reasoning for both cost and as a result of my observation that minimal/no reasoning modes seem to have better "understanding". It has been my observation there is a reasoning/understanding bias/variance style trade-off when using reasoning models, i.e. stronger reasoning results in reduced understanding.
 2. A deep reasoning stage with specific instructions to surface uncertaintities and assess self-confidence as a core reasoning method.  It has my observation that many seemingly disparate disconnected techniques in prompt engineering act as "uncertainty resolvers"-- uncertainty can be resolved via generation, tools, code, etc.
-3. A formatting stage for ensuring answer is in the proper context.  This stage may be optional.
+3. Optionally, a formatting stage for ensuring answer is in the proper context.  
 
-
-My initial protocol showed strong SOTA performance in reasoning but still struggled behind the MiroFlow team therefore we enhanced the results with specialized market tools:
+Additionally, I enhanced my protocol with access to custom tools:
 
 - Polymarket for odds
 - Deribit for market data
 - Odds for sports 
+- Built-in search
 
-These tools helped in forecasting certain kinds of events. However, MiroFlow still showed dominance in wide research style tasks. I therefore added a wide rsearch stage using Serp API based on after brief research of the MiroFlow approach.
+Initial testing showed SOTA performance in reasoning and search kinds of events. However, the leading other competitor, MiroFlow, scored higher in wide search capability. After conducting an AI review of their project, I extended my agnetic pipeline with Serper API for wide search capabilities.
 
-In addition, I added multiple drafts to the first stage, configured to 2 drafts in our winning competition,which is a "poor mans" way of simulating the kind of multiple drafts hypothesized as used in multi-draft models like GPT-5 Pro or Grok-4 Heavy. It is my understanding MiroFlow uses a kind-of confidence weighting over multiple results which may yield even better resuls but would have increased costs. 
+In addition, I added multiple drafts to the first stage only, configured to 2 drafts in our winning competition. This simulates the kind of multiple drafts reasoning present in multi-draft models like GPT-5 Pro, Grok-4, and the leading other competitor MiroFlow uses a more advanced multi-draft consensus.  Adopting a multi-draft consensus approach was considered but would have increased API costs-- by adopting the approach of multiple drafts only in the context generation state this minimized additional costs.
+
 
 ### Results
 
-We achieved multiple best-in-class 2nd place results and a 1st place finish for the last week we tested it. My protocol is best in class in reasoning but the wide search capability of our agents is still rudimentary-- without extensive "sub-agent" style planning.
+We achieved multiple best-in-class 2nd place results and a 1st place finish for the last week we tested it-- which was the first week with all capabilities working. My protocol is best in class in reasoning but the wide search capability of our agents is still rudimentary-- without extensive "sub-agent" style planning.
 
-I hypothesize combining my Global Agentic Pipeline with MiroFlow wide search capabilities would result in a new overall SOTA result as my method already proven best-in-class reasoning and their approach is typically stronger on wide search.
+I hypothesize combining my Global Agentic Pipeline with MiroFlow improved wide search capabilities would result in a new overall SOTA result as my method already proven itself best-in-class reasoning but improved sub-agent style planning for wide search is hypothesized to produce SOTA results.
 
-Unfortunately, costs weren't published so it is not possible to assess on a-like cost basis but running the pipeline costs in the range of 30-45 cents per query.
+Unfortunately, costs weren't published so it is not possible to assess on performance to cost basis but running the pipeline costs in the range of 30-45 cents per query for OpenAI costs plus SERPER costs (trivial)
 
 ### Prompt Engineering Notes
 
 Of note, during technical testing of the pipeline, I discovered that GPT-5 would easily get confused with structured data in ranges when the ranges are out-of-order, example A 90-100, B 80-90, C 120-150. I added specific instructions to correct this. This is an area OpenAI can cleary do some work to improve.
 
-
 ## Caution
 AI generated code for competition. Code was not developed for production use but may nonetheless prove valuable for indepedent researchers or as a local research agentic pipeline.
 
 I was able to deploy it to Google Cloud for running workloads against as well but it is not recommended for production use case-by-case consideration and a thorough code review. 
+
+
+
+## Detailed Documentation AI Generated
+
 
 
 ## Quick Start
@@ -106,10 +114,6 @@ If the smoke test succeeds, hit `http://localhost:8000/health` or invoke `/execu
 - Supply a `SERVER_API_KEY` when exposing the FastAPI `/execute` endpoint and require clients to send it via `Authorization: Bearer`.
 - The deployed service exposes a URL; hit `/health` for a basic check and use authenticated requests for `/execute`.
 - We previously attempted an Azure deployment, but outbound firewall timeouts blocked reliable execution.
-
-
-## Additional Documentation AI Generated
-
 
 
 ## Global Agentic Protocol
